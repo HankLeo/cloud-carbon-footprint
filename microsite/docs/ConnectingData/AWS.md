@@ -5,11 +5,13 @@ slug: /aws
 sidebar_position: 1
 ---
 
+### Account Setup
+
 Your AWS account needs to be configured to generate Cost and Usage reports and save those reports in S3, and the application needs to authenticate with AWS and run queries on that data using Amazon Athena.
 
 1.  Ensure your aws account has the correct permissions
 
-    - You will need an [IAM](https://aws.amazon.com/premiumsupport/knowledge-center/create-access-key/) user that can create access-keys and modify your billing settings.
+    - You will need an IAM role that can give you access to Billing data via the CUR and Athena. Note that it is not necessary to create a new IAM user or access key.
     - You can use the CloudFormation template file [ccf-app.yaml](https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/blob/trunk/cloudformation/ccf-app.yaml) to automate the creation of a role that allows the Cloud Carbon Footprint application to read Cost and Usage Reports via AWS Athena. Note: the section that asks you to specify the "AssumeRolePolicyDocument" is where you define the user or role that will have permissions to assume the "ccf-app" role.
     - This role name will be used for the value in the environment variable: `AWS_TARGET_ACCOUNT_ROLE_NAME`
 
@@ -42,6 +44,10 @@ Your AWS account needs to be configured to generate Cost and Usage reports and s
 :warning: This will incur some cost. Use this sparingly if you wish to test with live data.
 
 DISCLAIMER: If your editor of choice is VS Code, we recommend to use either your native or custom terminal of choice (i.e. iterm) instead. Unexpected authentication issues have occured when starting up the server in VS Code terminals.
+
+### Account Filtering and Labels
+
+By default, CCF will request data for all AWS accounts under the configured billing account within the Cost and Usage Reports (CUR) Data. Additionally, these accounts will only be labeled by the default numerical ID as displayed in the CUR row. If you wish to specify a subset of accounts to estimate, as well as add an associated label or name for the account, refer to the usage of the [AWS_ACCOUNTS](../ConfigurationOptions/ConfigurationsGlossary.md/#optionally-set-these-aws-variables) variable within the configuration glossary.
 
 ### Unsupported Usage Types
 

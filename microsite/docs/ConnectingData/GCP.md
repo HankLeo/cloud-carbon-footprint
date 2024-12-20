@@ -1,9 +1,12 @@
 ---
 id: gcp
-title: GCP
+title: Google Cloud (GCP)
+sidebar_label: GCP
 slug: /gcp
 sidebar_position: 2
 ---
+
+### Account Setup
 
 Your Google Cloud Billing Account needs to be configured to export Billing Data to BigQuery, and the application needs to authenticate with GCP to run queries on that data in BigQuery.
 
@@ -32,6 +35,10 @@ Your Google Cloud Billing Account needs to be configured to export Billing Data 
 ⚠️ This will incur some cost. Use this sparingly if you wish to test with live data.
 
 DISCLAIMER: If your editor of choice is VS Code, we recommend using either your native or custom terminal of choice (i.e. iterm) instead. Unexpected authentication issues have occurred when starting up the server in VS Code terminals.
+
+### Filtering Projects
+
+By default, CCF will request usage data for all Google Cloud projects connected to the billing account that was configured for the exported billing data in BigQuery. If you wish to provide a smaller list of projects to request estimates for, please refer to the [Specifying Accounts](../ConfigurationOptions/PerformanceConsiderations.md#specifying-accounts) section of the Configuration Options.
 
 ### Unsupported Usage Types
 

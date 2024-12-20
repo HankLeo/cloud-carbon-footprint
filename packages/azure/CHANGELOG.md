@@ -1,5 +1,78 @@
 # @cloud-carbon-footprint/azure
 
+## 1.8.0
+
+### Minor Changes
+
+- 0976d8cf: Add support for authenticating with Azure using an SPN and a cetificate instead of a client secret
+
+### Patch Changes
+
+- Updated dependencies [0976d8cf]
+  - @cloud-carbon-footprint/common@1.14.0
+
+## 1.7.0
+
+### Minor Changes
+
+- af506a23: Add subscriptionIds to /recommendations API for azure accounts so that we can get recommendations per account as a param, not just from an env variable
+- f8b15631: adds support for additional regions
+
+## 1.6.0
+
+### Minor Changes
+
+- dd3bd1bc: Add subscriptionIds as a parameter to getDataFromConsumptionManagement
+
+### Patch Changes
+
+- Updated dependencies [db1b66fe]
+  - @cloud-carbon-footprint/common@1.13.1
+
+## 1.5.0
+
+### Minor Changes
+
+- 6ffe7497: adds electricity maps api handling. For CLI create-app template changes, refer to [this commit](https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/commit/2749723c00343865c7453fea29609ea6dad4b5e9).
+
+### Patch Changes
+
+- Updated dependencies [bc06b861]
+- Updated dependencies [7630768d]
+- Updated dependencies [6ffe7497]
+  - @cloud-carbon-footprint/common@1.13.0
+
+## 1.4.1
+
+### Patch Changes
+
+- c515ba60: Adds aditional aliases for Azure regions
+
+## 1.4.0
+
+### Minor Changes
+
+- c82bf5fd: Adds config support for chunking/splitting azure requests by subscription
+- 1a5d7636: Adds support for listing Azure subscription IDs to fetch
+
+### Patch Changes
+
+- Updated dependencies [1a5d7636]
+- Updated dependencies [c82bf5fd]
+  - @cloud-carbon-footprint/common@1.12.0
+
+## 1.3.0
+
+### Minor Changes
+
+- 5b5a0ac5: Updates support to version 9.2 of the @azure/arm-consumption package
+- b98fd6d1: updates azure recs to support skuchange
+
+### Patch Changes
+
+- Updated dependencies [65386330]
+  - @cloud-carbon-footprint/core@0.17.3
+
 ## 1.2.0
 
 ### Minor Changes

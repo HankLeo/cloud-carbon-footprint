@@ -2,7 +2,7 @@
 id: recommendations
 title: Recommendations
 slug: /recommendations
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 If users would like to view a list of recommendations to lower their energy consumption, co2e emissions as well as potential costs from their cloud usage, we have provided a `/recommendations` route to view the data in JSON format.
@@ -113,6 +113,20 @@ Required permissions necessary for the GCP Recommender Client:
 | resourcemanager.projects.get |
 | resourcemanager.projects.list |
 </details>
+
+## Azure
+### Advisor
+Azure provides a service named Advisor that helps optimize Azure deployments. It analyzes your usage and resource configuration and then recommends solutions that can help you improve the cost effectiveness, performance, reliability, and security of Azure resources. 
+Currently, Cloud Carbon Footprint uses the Advisor API to retrieve recommendations for Azure Virtual Machines by filtering for the Cost category.
+
+For further information regarding the Azure feature, you can view [this documentation](https://docs.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations)
+
+The types of recommendations we provide regarding Azure Virtual Machines are:
+- Shutdown idle virtual machines
+- Resize virtual machines for optimization (now called "Sku change")
+
+#### Permissions
+In order to retrieve Azure Advisor recommendations, access for Advisor must be enabled. [Here](https://docs.microsoft.com/en-us/azure/advisor/advisor-cost-recommendations#enable-advisor) is documentation for enabling access.
 
 ## Query Parameter Options
 In the case of AWS Right-sizing recommendations, we have provided an optional query parameter `awsRecommendationTarget` to customize modify type recommendations that are returned.

@@ -12,6 +12,7 @@ import {
   getCachedData,
   getCacheFileName,
   getMissingDates,
+  mergeEstimates,
 } from './common/helpers'
 
 export const testCachePath = 'mock-estimates.json'
@@ -38,7 +39,8 @@ export default class LocalCacheManager extends CacheManager {
       ? testCachePath
       : getCacheFileName(grouping)
 
-    await this.fileHandle(cacheFile, this.cachedEstimates.concat(estimates))
+    const mergedEstimates = mergeEstimates(estimates, this.cachedEstimates)
+    await this.fileHandle(cacheFile, grouping, mergedEstimates)
   }
 
   async getMissingDates(
@@ -48,20 +50,24 @@ export default class LocalCacheManager extends CacheManager {
     this.cacheLogger.info('Using local cache file...')
 
     const estimates = await this.loadEstimates(grouping)
-    const filteredEstimates = estimates
-      ? this.filterEstimatesForRequest(request, estimates)
-      : []
+    const filteredEstimates = this.filterEstimatesForRequest(request, estimates)
 
     this.cachedEstimates = filteredEstimates
 
     return getMissingDates(filteredEstimates, request, grouping)
   }
 
-  private async fileHandle(cacheFile: string, estimates: EstimationResult[]) {
+  private async fileHandle(
+    cacheFile: string,
+    grouping: string,
+    estimates: EstimationResult[],
+  ) {
     let fh = null
     try {
       fh = await promises.open(cacheFile, 'r+')
-      await writeToFile(promises, estimates, fh)
+      const cachedData = await this.loadEstimates(grouping)
+      const mergedEstimates = mergeEstimates(estimates, cachedData)
+      await writeToFile(promises, mergedEstimates, fh)
     } catch (err) {
       console.warn(`Setting estimates error: ${err.message}`)
     } finally {
@@ -72,7 +78,7 @@ export default class LocalCacheManager extends CacheManager {
   }
 
   private async loadEstimates(grouping: string): Promise<EstimationResult[]> {
-    let cachedData: EstimationResult[] | any
+    let cachedData: EstimationResult[] = []
     const loadedCache = process.env.TEST_MODE
       ? testCachePath
       : getCacheFileName(grouping)
@@ -81,13 +87,23 @@ export default class LocalCacheManager extends CacheManager {
       const dataStream = await fs.createReadStream(loadedCache)
       cachedData = await getCachedData(dataStream)
     } catch (error) {
-      console.warn(
-        'WARN: Unable to read cache file. Got following error: \n' + error,
-        '\n',
-        'Creating new cache file...',
-      )
-      await promises.writeFile(loadedCache, '[]', 'utf8')
+      if (error.code === 'ENOENT') {
+        await this.createCacheFile(loadedCache)
+      } else {
+        this.handleCacheReadError()
+      }
     }
     return cachedData
+  }
+
+  private handleCacheReadError() {
+    this.cacheLogger.warn(
+      'There was an error parsing the cache file. Ignoring cache and fetching fresh estimates...',
+    )
+  }
+
+  private async createCacheFile(filePath) {
+    this.cacheLogger.warn('Cache file not found. Creating new cache file...')
+    await promises.writeFile(filePath, '[]', 'utf8')
   }
 }

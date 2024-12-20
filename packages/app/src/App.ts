@@ -7,6 +7,7 @@ import {
   configLoader,
   EmissionRatioResult,
   EstimationResult,
+  AccountDetails,
   GroupBy,
   Logger,
   LookupTableInput,
@@ -25,6 +26,10 @@ import {
   AWSAccount,
 } from '@cloud-carbon-footprint/aws'
 import { GCPAccount, getGCPEmissionsFactors } from '@cloud-carbon-footprint/gcp'
+import {
+  ALI_EMISSIONS_FACTORS_METRIC_TON_PER_KWH,
+  AliAccount,
+} from '@cloud-carbon-footprint/ali'
 import { OnPremise } from '@cloud-carbon-footprint/on-premise'
 
 import cache from './Cache'
@@ -39,11 +44,13 @@ export default class App {
     request: EstimationRequest,
   ): Promise<EstimationResult[]> {
     const appLogger = new Logger('App')
-    const { startDate, endDate, cloudProviderToSeed } = request
+    const { startDate, endDate, accounts, cloudProviderToSeed } = request
     const grouping = request.groupBy as GroupBy
     const config = configLoader()
     includeCloudProviders(cloudProviderToSeed, config)
-    const { AWS, GCP, AZURE } = config
+    const { AWS, GCP, AZURE, ALI } = config
+    if (configLoader().ELECTRICITY_MAPS_TOKEN)
+      appLogger.info('Using Electricity Maps')
     if (process.env.TEST_MODE) {
       return []
     }
@@ -60,7 +67,8 @@ export default class App {
         AWSEstimatesByRegion.push(estimates)
       } else if (AWS?.accounts.length) {
         // Resolve AWS Estimates synchronously in order to avoid hitting API limits
-        for (const account of AWS.accounts) {
+        const awsAccounts = AWS.accounts as AccountDetails[]
+        for (const account of awsAccounts) {
           const estimates = await Promise.all(
             await new AWSAccount(
               account.id,
@@ -85,8 +93,9 @@ export default class App {
         ).getDataFromBillingExportTable(startDate, endDate, grouping)
         GCPEstimatesByRegion.push(estimates)
       } else if (GCP?.projects.length) {
+        const googleProjectDetails = GCP.projects as AccountDetails[]
         // Resolve GCP Estimates asynchronously
-        for (const project of GCP.projects) {
+        for (const project of googleProjectDetails) {
           const estimates = await Promise.all(
             await new GCPAccount(
               project.id,
@@ -109,16 +118,31 @@ export default class App {
         startDate,
         endDate,
         grouping,
+        accounts,
       )
       AzureEstimatesByRegion.push(estimates)
       appLogger.info('Finished Azure Estimations')
+    }
+
+    const AliEstimates: EstimationResult[][] = []
+    if (ALI.INCLUDE_ESTIMATES && ALI.authentication?.accessKeyId) {
+      appLogger.info('Starting Ali Cloud Estimations')
+      const aliAccount = new AliAccount()
+      const estimates = await aliAccount.getDataFromCostAndUsageReports(
+        startDate,
+        endDate,
+        grouping,
+      )
+      AliEstimates.push(estimates)
+      appLogger.info('Finished Ali Cloud Estimations')
     }
 
     return reduceByTimestamp(
       AWSEstimatesByRegion.flat()
         .flat()
         .concat(GCPEstimatesByRegion.flat())
-        .concat(AzureEstimatesByRegion.flat()),
+        .concat(AzureEstimatesByRegion.flat())
+        .concat(AliEstimates.flat()),
     )
   }
 
@@ -127,6 +151,7 @@ export default class App {
       AWS: AWS_EMISSIONS_FACTORS_METRIC_TON_PER_KWH,
       GCP: getGCPEmissionsFactors(),
       AZURE: AZURE_EMISSIONS_FACTORS_METRIC_TON_PER_KWH,
+      ALI: ALI_EMISSIONS_FACTORS_METRIC_TON_PER_KWH,
     }
 
     return Object.entries(
@@ -170,7 +195,8 @@ export default class App {
       AWSRecommendations.push(recommendations)
     } else {
       // Resolve AWS Estimates synchronously in order to avoid hitting API limits
-      for (const account of AWS.accounts) {
+      const awsAccounts = AWS.accounts as AccountDetails[]
+      for (const account of awsAccounts) {
         const recommendations: RecommendationResult[] = await Promise.all(
           await new AWSAccount(
             account.id,
@@ -208,7 +234,9 @@ export default class App {
     if (AZURE?.USE_BILLING_DATA) {
       const azureAccount = new AzureAccount()
       await azureAccount.initializeAccount()
-      const recommendations = await azureAccount.getDataFromAdvisorManagement()
+      const recommendations = await azureAccount.getDataFromAdvisorManagement(
+        request.accounts,
+      )
       AzureRecommendations.push(recommendations)
     }
     allRecommendations.push(AzureRecommendations.flat())
@@ -216,22 +244,24 @@ export default class App {
     return allRecommendations.flat()
   }
 
-  getAwsEstimatesFromInputData(
+  async getAwsEstimatesFromInputData(
     inputData: LookupTableInput[],
-  ): LookupTableOutput[] {
-    return AWSAccount.getCostAndUsageReportsDataFromInputData(inputData)
+  ): Promise<LookupTableOutput[]> {
+    return await AWSAccount.getCostAndUsageReportsDataFromInputData(inputData)
   }
 
-  getGcpEstimatesFromInputData(
+  async getGcpEstimatesFromInputData(
     inputData: LookupTableInput[],
-  ): LookupTableOutput[] {
-    return GCPAccount.getBillingExportDataFromInputData(inputData)
+  ): Promise<LookupTableOutput[]> {
+    return await GCPAccount.getBillingExportDataFromInputData(inputData)
   }
 
-  getAzureEstimatesFromInputData(
+  async getAzureEstimatesFromInputData(
     inputData: LookupTableInput[],
-  ): LookupTableOutput[] {
-    return AzureAccount.getDataFromConsumptionManagementInputData(inputData)
+  ): Promise<LookupTableOutput[]> {
+    return await AzureAccount.getDataFromConsumptionManagementInputData(
+      inputData,
+    )
   }
 
   getOnPremiseEstimatesFromInputData(

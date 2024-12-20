@@ -5,7 +5,7 @@
 export { default as Logger } from './Logger'
 export { default as configLoader, setConfig } from './ConfigLoader'
 export { default as Config } from './Config'
-export type { QUERY_DATE_TYPES, CCFConfig, AWSAccount } from './Config'
+export type { QUERY_DATE_TYPES, CCFConfig } from './Config'
 export { GroupBy } from './Config'
 export {
   PartialDataError,
@@ -40,4 +40,9 @@ export {
   AWS_DEFAULT_RECOMMENDATIONS_SERVICE,
 } from './RecommendationsService'
 export * from './helpers'
-export type { GoogleAuthClient } from './Types'
+export type {
+  GoogleAuthClient,
+  AccountDetails,
+  AccountDetailsOrIdList,
+} from './Types'
+export * from './EmissionsFactors'

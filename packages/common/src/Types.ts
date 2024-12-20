@@ -16,3 +16,10 @@ export type GoogleAuthClient =
   | UserRefreshClient
   | Impersonated
   | BaseExternalAccountClient
+
+export type AccountDetails = {
+  id: string
+  name?: string
+}
+
+export type AccountDetailsOrIdList = AccountDetails[] | string[]

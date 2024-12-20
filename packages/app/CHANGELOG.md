@@ -1,5 +1,115 @@
 # @cloud-carbon-footprint/app
 
+## 1.8.0
+
+### Minor Changes
+
+- 7e899dce: Adds support and configuration variables for filtering accounts/projects by id
+
+### Patch Changes
+
+- Updated dependencies [7e899dce]
+  - @cloud-carbon-footprint/aws@0.16.0
+  - @cloud-carbon-footprint/common@1.15.0
+  - @cloud-carbon-footprint/gcp@0.15.0
+
+## 1.7.0
+
+### Minor Changes
+
+- 608bdcb2: Improves merging for setting estimates to the JSON cache, fixes recurring file parsing issue
+
+## 1.6.0
+
+### Minor Changes
+
+- af506a23: Add subscriptionIds to /recommendations API for azure accounts so that we can get recommendations per account as a param, not just from an env variable
+- ef945dca: Pass through query params from cache to the end client
+
+### Patch Changes
+
+- Updated dependencies [af506a23]
+- Updated dependencies [f8b15631]
+  - @cloud-carbon-footprint/azure@1.7.0
+
+## 1.5.0
+
+### Minor Changes
+
+- dd3bd1bc: Add subscriptionIds as a parameter to getDataFromConsumptionManagement
+
+### Patch Changes
+
+- Updated dependencies [db1b66fe]
+- Updated dependencies [dd3bd1bc]
+- Updated dependencies [7d527d28]
+  - @cloud-carbon-footprint/common@1.13.1
+  - @cloud-carbon-footprint/azure@1.6.0
+  - @cloud-carbon-footprint/ali@0.1.3
+
+## 1.4.0
+
+### Minor Changes
+
+- dd98c8cb: Enables Ali Cloud ECS estimates in the CCF Application
+- 6ffe7497: adds electricity maps api handling. For CLI create-app template changes, refer to [this commit](https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/commit/2749723c00343865c7453fea29609ea6dad4b5e9).
+
+### Patch Changes
+
+- Updated dependencies [bc06b861]
+- Updated dependencies [7630768d]
+- Updated dependencies [dd98c8cb]
+- Updated dependencies [53812d8d]
+- Updated dependencies [6ffe7497]
+  - @cloud-carbon-footprint/common@1.13.0
+  - @cloud-carbon-footprint/ali@0.1.2
+  - @cloud-carbon-footprint/gcp@0.14.0
+  - @cloud-carbon-footprint/aws@0.15.0
+  - @cloud-carbon-footprint/azure@1.5.0
+
+## 1.3.0
+
+### Minor Changes
+
+- fedf79c0: API and CLI processes now persist connection to mongodb client when enabled as cache
+
+  For Create-App changes, please refer to this [commit](https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/commit/8995b8a7f29fb06f8a437166d32e75b1ed147870).
+
+### Patch Changes
+
+- Updated dependencies [c82bf5fd]
+- Updated dependencies [1a5d7636]
+- Updated dependencies [c82bf5fd]
+- Updated dependencies [4683b86f]
+  - @cloud-carbon-footprint/azure@1.4.0
+  - @cloud-carbon-footprint/common@1.12.0
+  - @cloud-carbon-footprint/gcp@0.13.1
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies [42b2359e]
+- Updated dependencies [0d20b32c]
+  - @cloud-carbon-footprint/gcp@0.13.0
+  - @cloud-carbon-footprint/common@1.11.0
+
+## 1.2.1
+
+### Patch Changes
+
+- 65386330: bumps ramda dependency
+- Updated dependencies [e0299c2c]
+- Updated dependencies [2510e2a7]
+- Updated dependencies [efbcad00]
+- Updated dependencies [5b5a0ac5]
+- Updated dependencies [56273914]
+- Updated dependencies [65386330]
+- Updated dependencies [b98fd6d1]
+  - @cloud-carbon-footprint/gcp@0.12.0
+  - @cloud-carbon-footprint/aws@0.14.4
+  - @cloud-carbon-footprint/azure@1.3.0
+
 ## 1.2.0
 
 ### Minor Changes
